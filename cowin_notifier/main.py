@@ -13,7 +13,7 @@ district = District()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Log Watcher")
+app = FastAPI(title="CoWin-Notifier")
 
 
 @app.on_event("startup")
