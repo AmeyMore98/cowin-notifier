@@ -2,7 +2,7 @@ import urllib.parse
 
 
 class Constants:
-    WAIT_LIMIT = 5
+    WAIT_TIME_IN_SECONDS = 5
 
 
 class CowinAPIs:
