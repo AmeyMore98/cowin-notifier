@@ -18,8 +18,9 @@ app = FastAPI(title="Log Watcher")
 
 @app.on_event("startup")
 @repeat_every(seconds=Constants.WAIT_TIME_IN_SECONDS, wait_first=True)
-async def start_watch_loop() -> None:
-    centers = CowinNotifier.get_centers_with_vaccines(district.id)
+def start_watch_loop() -> None:
+    centers = CowinNotifier.get_centers_in_district_with_vaccines(district_id=district.id)
+    message = ""
     for center in centers:
         message += f"Pincode: {center.get('pincode')}\n"
         message += f"Centre Name: {center.get('name')}\n"
@@ -32,7 +33,7 @@ async def start_watch_loop() -> None:
             message += f"Available Capacity: {session.get('available_capacity')}\n"
             message += f"Vaccine: {session.get('vaccine')}\n"
             message += f"Slots Available In: {', '.join(session.get('slots'))}\n"
-    logger.info(message)
+    logger.info(f"Message: {message}")
 
 
 @app.get("/ping")

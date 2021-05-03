@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class CowinNotifier:
     @staticmethod
-    def get_centers_with_vaccines_in_district(self, district_id: Unions[int, str]):
+    def get_centers_in_district_with_vaccines(district_id: Union[int, str]):
         all_centers = CowinNotifier.get_all_centers_for_district(district_id)
         return list(filter(CowinNotifier.is_vaccine_available_at_center, all_centers))
 
@@ -32,5 +32,5 @@ class CowinNotifier:
 
     @staticmethod
     def is_vaccine_available_at_center(center_data: list):
-        for session in center["sessions"]:
+        for session in center_data["sessions"]:
             return session.get("available_capacity", 0) > 1
