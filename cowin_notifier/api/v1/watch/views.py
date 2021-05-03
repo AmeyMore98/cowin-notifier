@@ -4,6 +4,7 @@ from fastapi import APIRouter
 
 from cowin_notifier.api.v1.watch.models import District
 from cowin_notifier.api.v1.watch.schemas import DistrictIn, DistrictOut
+from cowin_notifier.api.v1.watch.service import CowinNotifier
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -46,3 +47,15 @@ async def delete_district(id: int) -> dict:
     district = await District.get(id=id)
     await district.delete()
     return dict(id=district.id, name=district.name)
+
+
+@router.get("/test")
+async def test():
+    """
+    Fetch Districts
+
+    Returns:
+        DistrictOut: All Districts from DB
+    """
+
+    return await CowinNotifier().watch_and_notify()

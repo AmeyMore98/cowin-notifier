@@ -4,8 +4,7 @@ from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 
 from cowin_notifier.api.v1.api import router
-
-# from fastapi_utils.tasks import repeat_every
+from cowin_notifier.api.v1.watch.service import CowinNotifier
 from cowin_notifier.decorators import repeat_every
 
 logging.basicConfig(level=logging.INFO)
@@ -44,10 +43,9 @@ async def init_db() -> None:
 
 
 # @app.on_event("startup")
-# @repeat_every(seconds=1)  # 1 hour
+# @repeat_every(seconds=1, max_repetitions=1)  # 1 hour
 # async def start_watch_loop() -> None:
-#     import time
-#     print(f"Recurring task executed at: {time.time()}")
+#     await CowinNotifier().trigger()
 
 
 @app.get("/ping")
