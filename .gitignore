@@ -147,6 +147,9 @@ dmypy.json
 # thumbnail cache on Windows
 Thumbs.db
 
+# Local DB
+db.sqlite3*
+
 # profiling data
 .prof
 

@@ -1,11 +1,10 @@
 import datetime
 import logging
-import requests
-import time
 
+import requests
 from fastapi import status
 
-from cowin_notifier.api.v1.watch.constants import Constants, CowinAPIs
+from cowin_notifier.api.v1.watch.constants import CowinAPIs
 from cowin_notifier.api.v1.watch.models import District
 
 district = District()
