@@ -1,4 +1,5 @@
-from typing import Iterable
+import json
+from typing import Iterable, List
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -40,10 +41,74 @@ def requests_retry_session(
     return session
 
 
-async def slack_alert(endpoint: str, msg: str):
-    payload = {
-        "text": str(msg),
-        "username": "GlamAR-Bot",
-        "icon_emoji": ":glamar-logo:",
-    }
-    requests.post(url=endpoint, json=payload)
+def slack_alert(endpoint: str, payload: dict) -> requests.Response:
+    """
+    Send message to Slack webhook
+    # todo: make use of requests_retry_session()
+    Args:
+        endpoint (str): URL to hit
+        payload (dict): payload
+
+    Returns:
+        requests.Response: Response object
+    """
+    return requests.post(url=endpoint, data=json.dumps(payload))
+
+
+class SlackFormater:
+    """
+    Class to encapsulate Slack Block Kit formatting
+    """
+
+    def __init__(self) -> None:
+        self.blocks: List[dict] = []
+
+    def add_divider(self) -> None:
+        self.blocks.append(dict(type="divider"))
+
+    def _text_type(self, text: str, text_type: str) -> dict:
+        return dict(type=text_type, text=text)
+
+    def add_header(self, text: str, text_type: str) -> None:
+        self.blocks.append(
+            dict(
+                type="header",
+                text=dict(
+                    type=text_type,
+                    text=text,
+                    emoji=True,
+                ),
+            )
+        )
+
+    def add_section(self, text: str, text_type: str, accessory: dict = {}) -> None:
+        self.blocks.append(
+            dict(
+                type="section",
+                text=self._text_type(
+                    text,
+                    text_type,
+                ),
+                accessory=accessory,
+            )
+        )
+
+    def get_checkbox_option(
+        self,
+        text: str,
+        text_type: str,
+        value: str,
+    ) -> dict:
+        return dict(
+            text=self._text_type(
+                text,
+                text_type,
+            ),
+            value=value,
+        )
+
+    def get_checkbox(self, options: List[dict], action_id: str) -> dict:
+        return dict(type="checkboxes", options=options, action_id=action_id)
+
+    def get_blocks(self) -> dict:
+        return dict(blocks=self.blocks)

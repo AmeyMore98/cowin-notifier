@@ -42,10 +42,11 @@ async def init_db() -> None:
     )
 
 
+# Todo: Remove when deploying
 # @app.on_event("startup")
 # @repeat_every(seconds=1, max_repetitions=1)  # 1 hour
 # async def start_watch_loop() -> None:
-#     await CowinNotifier().trigger()
+#     await CowinNotifier().watch_and_notify()
 
 
 @app.get("/ping")

@@ -52,10 +52,7 @@ async def delete_district(id: int) -> dict:
 @router.get("/test")
 async def test():
     """
-    Fetch Districts
-
-    Returns:
-        DistrictOut: All Districts from DB
+    !This endpoint is only for testing
     """
 
     return await CowinNotifier().watch_and_notify()
