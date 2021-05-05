@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Cowin-Notifier",
-    description="A FastAPI based app to send updates on availability of CoVid-19 vaccines"
+    description="A FastAPI based app to send updates on availability of Covid-19 vaccines"
 )
 
 TORTOISE_CONFIG = {
