@@ -12,7 +12,10 @@ from cowin_notifier.api.v1.watch.constants import Constants
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Cowin-Notifier")
+app = FastAPI(
+    title="Cowin-Notifier",
+    description="A FastAPI based app to send updates on availability of Covid-19 vaccines"
+)
 
 TORTOISE_CONFIG = {
     "connections": {
