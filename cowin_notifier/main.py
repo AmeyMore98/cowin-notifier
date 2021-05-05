@@ -67,4 +67,4 @@ async def ping() -> dict:
     return dict(detail="pong")
 
 
-app.include_router(router=router)
+app.include_router(router=router, prefix="/api/v1")
