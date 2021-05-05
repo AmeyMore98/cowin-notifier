@@ -4,10 +4,10 @@ from typing import Any, List
 
 import requests
 
-from cowin_notifier.api.v1.watch.constants import MARKDOWN, PLAIN_TEXT, CowinAPIs
+from cowin_notifier.api.v1.watch.constants import MARKDOWN, PLAIN_TEXT, CowinAPIs, Constants
 from cowin_notifier.api.v1.watch.models import District
 from cowin_notifier.config import config
-from cowin_notifier.utils import SlackFormater, requests_retry_session, slack_alert
+from cowin_notifier.utils import SlackFormater, requests_retry_session, slack_alert, chunks
 
 logger = logging.getLogger(__name__)
 
@@ -73,52 +73,53 @@ class CowinNotifier:
             district_centers (List[dict]): district wise vaccine data
         """
         for district_center in district_centers:
-            slack_formatter = SlackFormater()
-            # there will always be at least one center for each district
-            state = district_center.get("centers")[0].get("state_name")
-            district = district_center.get("centers")[0].get("district_name")
+            for centers in chunks(district_center.get("centers", []), Constants.CHUNK_SIZE):
+                slack_formatter = SlackFormater()
+                # there will always be at least one center for each district
+                state = centers[0].get("state_name")
+                district = centers[0].get("district_name")
 
-            # header of statea and district
-            slack_formatter.add_header(f"{district}, {state} :zap:", PLAIN_TEXT)
-            slack_formatter.add_divider()
-
-            # centers signify all the vaccine centers available in the district
-            for itr, center in enumerate(district_center.get("centers", [])):
-                cb_options = []
-                # sessions signify the dates available for each center
-                for center_date in center.get("sessions", []):
-                    available_date = center_date.get("date")
-
-                    option_description = (
-                        f"  |  *Available Capacity*: {center_date.get('available_capacity')}"
-                        f"  |  *Min Age*: {center_date.get('min_age_limit')}"
-                        f"  |  :syringe: {center_date.get('vaccine', 'NA')}"
-                    )
-                    cb_text = f"{available_date}{option_description}"
-                    cb_option = slack_formatter.get_checkbox_option(
-                        cb_text,
-                        MARKDOWN,
-                        available_date,
-                    )
-                    cb_options.append(cb_option)
-
-                checkbox = slack_formatter.get_checkbox(cb_options, f"cb-{itr}")
-                center_name, center_pincode = (
-                    center.get("name"),
-                    center.get("pincode"),
-                )
-                center_details = f"*{center_name}* \t   *PIN* {center_pincode}"
-                slack_formatter.add_section(center_details, MARKDOWN, checkbox)
-
+                # header of statea and district
+                slack_formatter.add_header(f"{district}, {state} :zap:", PLAIN_TEXT)
                 slack_formatter.add_divider()
 
-            # notify over slack webhook for each district
-            payload = slack_formatter.get_blocks()
-            if payload.get("blocks"):
-                slack_alert(
-                    config.SLACK_WEBHOOK,
-                    payload,
-                )
+                # centers signify all the vaccine centers available in the district
+                for itr, center in enumerate(centers):
+                    cb_options = []
+                    # sessions signify the dates available for each center
+                    for center_date in center.get("sessions", []):
+                        available_date = center_date.get("date")
+
+                        option_description = (
+                            f"  |  *Available Capacity*: {center_date.get('available_capacity')}"
+                            f"  |  *Min Age*: {center_date.get('min_age_limit')}"
+                            f"  |  :syringe: {center_date.get('vaccine', 'NA')}"
+                        )
+                        cb_text = f"{available_date}{option_description}"
+                        cb_option = slack_formatter.get_checkbox_option(
+                            cb_text,
+                            MARKDOWN,
+                            available_date,
+                        )
+                        cb_options.append(cb_option)
+
+                    checkbox = slack_formatter.get_checkbox(cb_options, f"cb-{itr}")
+                    center_name, center_pincode = (
+                        center.get("name"),
+                        center.get("pincode"),
+                    )
+                    center_details = f"*{center_name}* \t   *PIN* {center_pincode}"
+                    slack_formatter.add_section(center_details, MARKDOWN, checkbox)
+
+                    slack_formatter.add_divider()
+
+                # notify over slack webhook for each district
+                payload = slack_formatter.get_blocks()
+                if payload.get("blocks"):
+                    slack_alert(
+                        config.SLACK_WEBHOOK,
+                        payload,
+                    )
 
     def notify(self, district_centers: List[dict]) -> Any:
         """
