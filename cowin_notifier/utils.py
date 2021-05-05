@@ -112,3 +112,18 @@ class SlackFormater:
 
     def get_blocks(self) -> dict:
         return dict(blocks=self.blocks)
+
+
+def chunks(_list: list, chunk_size:int):
+    """Yield successive `chunk_size` chunks from `_list`.
+    Ref: https://stackoverflow.com/a/312464/8041813
+
+    Args:
+        _list (list): List of items
+        chunk_size (int): Max chunk size
+
+    Yields:
+        Iterator[list]: One chunk
+    """
+    for i in range(0, len(_list), chunk_size):
+        yield _list[i:i + chunk_size]
