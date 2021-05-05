@@ -110,7 +110,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-# .env
+.env
 .env/
 .venv/
 env/
@@ -146,6 +146,9 @@ dmypy.json
 *.DS_Store
 # thumbnail cache on Windows
 Thumbs.db
+
+# Local DB
+db.sqlite3*
 
 # profiling data
 .prof

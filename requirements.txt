@@ -1,2 +1,5 @@
-fastapi[all]==0.63.0
-fastapi-utils==0.2.1
+environs==8.0.0
+fastapi==0.63.0
+requests==2.25.1
+tortoise-orm==0.16.21
+uvicorn==0.13.4

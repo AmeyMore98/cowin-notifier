@@ -1,5 +1,6 @@
 from fastapi import status
 
+
 def test_ping(test_app):
     response = test_app.get("/ping")
     response_data = response.json()
