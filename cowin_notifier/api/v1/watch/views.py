@@ -49,7 +49,7 @@ async def delete_district(id: int) -> dict:
     return dict(id=district.id, name=district.name)
 
 
-@router.get("/test")
+@router.get("/test", include_in_schema=False)
 async def test():
     """
     !This endpoint is only for testing
