@@ -39,6 +39,10 @@ class CowinNotifier:
             CowinAPIs.CALENDAR_BY_DISTRICT
         )
 
+        if response.status_code != 200:
+            logging.error(f"Cowin returned non-200 response -> Code: {response.status_code}, Content: {response.content}")
+            return []
+
         response_data = response.json()
         return list(
             filter(
