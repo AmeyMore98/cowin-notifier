@@ -1,39 +1,52 @@
 import logging
 
 from fastapi import FastAPI
-from fastapi_utils.tasks import repeat_every
+from tortoise.contrib.fastapi import register_tortoise
 
 from cowin_notifier.api.v1.api import router
 from cowin_notifier.api.v1.watch.service import CowinNotifier
-from cowin_notifier.api.v1.watch.constants import Constants
-from cowin_notifier.api.v1.watch.models import District
-
-district = District()
+from cowin_notifier.decorators import repeat_every
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="CoWin-Notifier")
+app = FastAPI(title="Cowin-Notifier")
+
+TORTOISE_CONFIG = {
+    "connections": {
+        "default": "sqlite://db.sqlite3",
+    },
+    "apps": {
+        "models": {
+            "models": [
+                "cowin_notifier.api.v1.watch.models",
+            ],
+            "default_connection": "default",
+        },
+    },
+}
 
 
+# startup tasks
 @app.on_event("startup")
-@repeat_every(seconds=Constants.WAIT_TIME_IN_SECONDS, wait_first=True)
-def start_watch_loop() -> None:
-    centers = CowinNotifier.get_centers_in_district_with_vaccines(district_id=district.id)
-    message = ""
-    for center in centers:
-        message += f"Pincode: {center.get('pincode')}\n"
-        message += f"Centre Name: {center.get('name')}\n"
-        message += f"From: {center.get('from')}\n"
-        message += f"To: {center.get('to')}\n\n"
+async def init_db() -> None:
+    """
+    Initializes database with Tortoise ORM
 
-        for index, session in enumerate(center.get("sessions", [])):
-            if index == 0:
-                message += f"Sessions/ Slots: \n"
-            message += f"Available Capacity: {session.get('available_capacity')}\n"
-            message += f"Vaccine: {session.get('vaccine')}\n"
-            message += f"Slots Available In: {', '.join(session.get('slots'))}\n"
-    logger.info(f"Message: {message}")
+    """
+    register_tortoise(
+        app,
+        config=TORTOISE_CONFIG,
+        generate_schemas=True,
+        add_exception_handlers=True,
+    )
+
+
+# Todo: Remove when deploying
+# @app.on_event("startup")
+# @repeat_every(seconds=1, max_repetitions=1)  # 1 hour
+# async def start_watch_loop() -> None:
+#     await CowinNotifier().watch_and_notify()
 
 
 @app.get("/ping")
