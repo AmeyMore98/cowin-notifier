@@ -19,7 +19,7 @@ app = FastAPI(
 
 TORTOISE_CONFIG = {
     "connections": {
-        "default": config.DB_URL,
+        "default": config.DATABASE_URL,
     },
     "apps": {
         "models": {
