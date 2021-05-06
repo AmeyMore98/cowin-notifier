@@ -8,5 +8,6 @@ class Config(BaseSettings):
     POLLING_DELAY_IN_SECONDS: int = 60 * 60
     DYNO_INACTIVITY_DELAY: int = 60 * 25
     CHUNK_SIZE: int = 15
+    LOGLEVEL: str = "INFO"
 
 config = Config()

@@ -9,7 +9,7 @@ from cowin_notifier.decorators import repeat_every
 from cowin_notifier.config import config
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=config.LOGLEVEL)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
