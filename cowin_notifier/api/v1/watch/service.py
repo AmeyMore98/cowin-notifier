@@ -64,7 +64,7 @@ class CowinNotifier:
         # todo: change these coditions as required
         for session in center["sessions"]:
             return (
-                session.get("available_capacity", 0) > -1
+                session.get("available_capacity", 0) > config.MIN_AVAILABLE_CAPACITY
                 and session.get("min_age_limit", 0) <= config.MIN_AGE_LIMIT
             )
 
