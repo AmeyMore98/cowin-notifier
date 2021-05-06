@@ -19,7 +19,7 @@ app = FastAPI(
 
 TORTOISE_CONFIG = {
     "connections": {
-        "default": "sqlite://db.sqlite3",
+        "default": config.DATABASE_URL,
     },
     "apps": {
         "models": {

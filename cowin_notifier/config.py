@@ -9,5 +9,6 @@ class Config(BaseSettings):
     DYNO_INACTIVITY_DELAY: int = 60 * 25
     CHUNK_SIZE: int = 15
     LOGLEVEL: str = "INFO"
+    DATABASE_URL: str
 
 config = Config()
