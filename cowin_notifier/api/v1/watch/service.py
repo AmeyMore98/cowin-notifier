@@ -4,7 +4,7 @@ from typing import Any, List
 
 import requests
 
-from cowin_notifier.api.v1.watch.constants import MARKDOWN, PLAIN_TEXT, CowinAPIs, Constants
+from cowin_notifier.api.v1.watch.constants import MARKDOWN, PLAIN_TEXT, CowinAPIs
 from cowin_notifier.api.v1.watch.models import District
 from cowin_notifier.config import config
 from cowin_notifier.utils import SlackFormater, requests_retry_session, slack_alert, chunks
@@ -64,7 +64,7 @@ class CowinNotifier:
         # todo: change these coditions as required
         for session in center["sessions"]:
             return (
-                session.get("available_capacity", 0) > -1
+                session.get("available_capacity", 0) > config.MIN_AVAILABLE_CAPACITY
                 and session.get("min_age_limit", 0) <= config.MIN_AGE_LIMIT
             )
 
@@ -77,7 +77,7 @@ class CowinNotifier:
             district_centers (List[dict]): district wise vaccine data
         """
         for district_center in district_centers:
-            for centers in chunks(district_center.get("centers", []), Constants.CHUNK_SIZE):
+            for centers in chunks(district_center.get("centers", []), config.CHUNK_SIZE):
                 slack_formatter = SlackFormater()
                 # there will always be at least one center for each district
                 state = centers[0].get("state_name")
